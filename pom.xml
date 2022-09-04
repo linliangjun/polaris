@@ -18,6 +18,10 @@
         </license>
     </licenses>
 
+    <modules>
+        <module>polaris-framework</module>
+    </modules>
+
     <properties>
         <encoding>UTF-8</encoding>
         <java.version>17</java.version>
