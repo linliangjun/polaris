@@ -6,21 +6,16 @@
 
     <parent>
         <groupId>cn.linliangjun.polaris</groupId>
-        <artifactId>polaris</artifactId>
+        <artifactId>polaris-framework</artifactId>
         <version>0.0.1</version>
     </parent>
-    <artifactId>polaris-framework</artifactId>
-    <packaging>pom</packaging>
+    <artifactId>polaris-base</artifactId>
 
-    <name>Polaris Framework</name>
+    <name>Polaris Base</name>
     <licenses>
         <license>
             <name>Apache License 2.0</name>
             <url>https://www.apache.org/licenses/LICENSE-2.0</url>
         </license>
     </licenses>
-
-    <modules>
-        <module>polaris-base</module>
-    </modules>
 </project>
