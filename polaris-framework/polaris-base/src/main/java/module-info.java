@@ -15,7 +15,12 @@
  */
 
 module polaris.base {
+    requires static java.logging;
+
     exports cn.linliangjun.polaris.framework.base.logging;
 
     uses cn.linliangjun.polaris.framework.base.logging.AbstractLoggerAdapter;
+
+    provides cn.linliangjun.polaris.framework.base.logging.AbstractLoggerAdapter with
+            cn.linliangjun.polaris.framework.base.logging.impl.JulLoggerAdapter;
 }
