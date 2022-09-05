@@ -14,8 +14,23 @@
  * limitations under the License.
  */
 
-module polaris.base {
-    exports cn.linliangjun.polaris.framework.base.logging;
+package cn.linliangjun.polaris.framework.base.util;
 
-    uses cn.linliangjun.polaris.framework.base.logging.AbstractLoggerAdapter;
+/**
+ * 类工具类
+ *
+ * @author linliangjun
+ */
+public final class ClassUtils {
+
+    private ClassUtils() {}
+
+    public static boolean exists(String className) {
+        try {
+            Class.forName(className);
+            return true;
+        } catch (ClassNotFoundException ignore) {
+            return false;
+        }
+    }
 }

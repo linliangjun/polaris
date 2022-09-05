@@ -14,8 +14,14 @@
  * limitations under the License.
  */
 
-module polaris.base {
-    exports cn.linliangjun.polaris.framework.base.logging;
+package cn.linliangjun.polaris.framework.base.logging;
 
-    uses cn.linliangjun.polaris.framework.base.logging.AbstractLoggerAdapter;
+/**
+ * 记录器等级
+ *
+ * @author linliangjun
+ */
+public enum Level {
+
+    ERROR, WARN, INFO, DEBUG, TRACE
 }
