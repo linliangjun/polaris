@@ -48,6 +48,10 @@
         </developer>
     </developers>
 
+    <modules>
+        <module>polaris-framework-base</module>
+    </modules>
+
     <properties>
         <encoding>UTF-8</encoding>
         <java.version>17</java.version>

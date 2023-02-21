@@ -1,0 +1,2 @@
+module polaris.framework.base {
+}
