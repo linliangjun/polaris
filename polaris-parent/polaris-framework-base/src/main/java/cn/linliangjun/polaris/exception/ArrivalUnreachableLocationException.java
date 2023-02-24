@@ -27,6 +27,11 @@ import jakarta.annotation.Nullable;
 public final class ArrivalUnreachableLocationException extends RuntimeException {
 
     @Nonnull
+    public static ArrivalUnreachableLocationException getInstance() {
+        return new ArrivalUnreachableLocationException();
+    }
+
+    @Nonnull
     public static ArrivalUnreachableLocationException getInstance(@Nullable String message) {
         if (message == null) {
             return new ArrivalUnreachableLocationException();

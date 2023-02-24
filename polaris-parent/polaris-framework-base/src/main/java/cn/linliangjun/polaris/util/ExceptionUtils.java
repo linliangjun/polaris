@@ -16,11 +16,13 @@
 
 package cn.linliangjun.polaris.util;
 
+import cn.linliangjun.polaris.exception.ArrivalUnreachableLocationException;
+import cn.linliangjun.polaris.exception.ClassCannotInstantiationException;
 import jakarta.annotation.Nonnull;
 import jakarta.annotation.Nullable;
 
-import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
+import java.util.Arrays;
 
 /**
  * 异常工具类
@@ -29,46 +31,63 @@ import java.lang.reflect.InvocationTargetException;
  */
 public final class ExceptionUtils {
 
-    private ExceptionUtils() {
+    public ExceptionUtils() {
     }
 
     /**
      * 抛出指定类型的异常
      *
-     * @throws T                       指定类型的异常
-     * @throws ThrowableUtilsException 工具类内部异常
+     * @throws ClassCannotInstantiationException 指定的异常类无法实例化
+     * @throws T                                 指定类型的异常
      */
-    public static <T extends Throwable> void thrown(@Nonnull Class<T> tClass, @Nullable String message) throws T {
-        String className = ClassUtils.getClassName(tClass);
-        if (!ClassUtils.isInstantiatable(tClass)) {
-            throw new ThrowableUtilsException("类型 %s 无法实例化".formatted(className));
-        }
-        T t = null;
-        try {
-            Constructor<T> constructor;
-            if (message == null) {
-                constructor = tClass.getConstructor();
-                t = constructor.newInstance();
-            } else {
-                constructor = tClass.getConstructor(String.class);
-                t = constructor.newInstance(message);
-            }
-        } catch (NoSuchMethodException e) {
-            throw new ThrowableUtilsException("类型 %s 不存在公共且%s的构造方法"
-                    .formatted(className, message == null ? "无参" : "仅含有有 String 类型"));
-        } catch (InstantiationException | IllegalAccessException e) {
-            Assert.unreachableLocation(null);
-        } catch (InvocationTargetException e) {
-
-        }
-        assert t != null;
-        throw t;
+    public static <T extends Exception> void thrown(@Nonnull Class<T> tClass) throws T {
+        thrown(tClass, null);
     }
 
-    private static class ThrowableUtilsException extends RuntimeException {
+    /**
+     * 抛出指定类型的异常，并附带指定的信息
+     *
+     * @throws ClassCannotInstantiationException 指定的异常类无法实例化
+     * @throws E                                 指定类型的异常
+     */
+    public static <E extends Exception> void thrown(@Nonnull Class<E> tClass, @Nullable String message) throws E {
+        Assert.notNull(tClass, "exception class(tClass) must not be null");
+        E e = getException(tClass, message);
+        var stackTrace = e.getStackTrace();
+        StackTraceElement[] traceElements = Arrays.copyOfRange(stackTrace, 7, stackTrace.length);
+        e.setStackTrace(traceElements);
+        throw e;
+    }
 
-        public ThrowableUtilsException(String message) {
-            super(message);
+    private static <E extends Exception>  E getException(Class<E> tClass, String message) {
+        if (!ClassUtils.isInstantiatable(tClass)) {
+            throw ClassCannotInstantiationException.getInstance(tClass,
+                    "it is an interface or abstract class etc.");
         }
+        E exp;
+        try {
+            if (message == null) {
+                var constructor = tClass.getConstructor();
+                exp = constructor.newInstance();
+            } else {
+                var constructor = tClass.getConstructor(String.class);
+                exp = constructor.newInstance(message);
+            }
+        } catch (NoSuchMethodException e) {
+            // the message parameter is reused here
+            message = "it has not public %s"
+                    .formatted(message == null ? "parameterless" : "one and only one string parameter");
+            throw ClassCannotInstantiationException.getInstance(tClass, message);
+        } catch (InvocationTargetException e) {
+            throw ClassCannotInstantiationException.getInstance(tClass,
+                    "an exception thrown by an invoked constructor");
+        } catch (InstantiationException | IllegalAccessException e) {
+            throw ArrivalUnreachableLocationException.getInstance();
+        }
+        return exp;
+    }
+
+    public static void main(String[] args) throws Exception {
+        thrown(Exception.class, null);
     }
 }

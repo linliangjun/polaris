@@ -32,6 +32,18 @@ public final class ClassUtils {
     }
 
     /**
+     * 获取指定类的类名
+     */
+    public static String getClassName(@Nonnull Class<?> clazz) {
+        Assert.notNull(clazz, "class(clazz) must not be null");
+        String name = clazz.getCanonicalName();
+        if (name == null) {
+            name = clazz.getName();
+        }
+        return name;
+    }
+
+    /**
      * 判断指定的类是否可实例化
      *
      * <p>可实例化要求类不能是原始类型、数组、抽象类、匿名类、接口、枚举、注解、Void/void 类型、合成类型。
@@ -48,24 +60,5 @@ public final class ClassUtils {
                 && clazz != void.class
                 && clazz != Void.class
                 && !clazz.isSynthetic();
-    }
-
-    public static void main(String[] args) {
-
-    }
-
-    /**
-     * @return
-     */
-//    public static boolean hasPublicConstruct() {
-//
-//    }
-
-    /**
-     * 获取指定类的类名
-     */
-    public static String getClassName(@Nonnull Class<?> clazz) {
-        Assert.notNull(clazz, "class(clazz) must not be null");
-        return clazz.getCanonicalName();
     }
 }

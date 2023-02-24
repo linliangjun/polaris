@@ -36,39 +36,31 @@ public final class Assert {
     /**
      * 断言对象不为 {@code null}
      *
-     * @throws MethodArgsInvalidException  参数 {@code message} 或 {@code args} 为 {@code null}
-     * @throws NullPointerException 对象为 {@code null}
+     * @throws MethodArgsInvalidException 参数 {@code message} 或 {@code args} 为 {@code null}
+     * @throws NullPointerException       对象为 {@code null}
      */
     public static void notNull(@Nullable Object o, @Nonnull String message, @Nonnull Object... args) {
-        Assert.argsNotNull(new Pair<>("message", message), new Pair<>("args", args));
-        if (o == null) {
-            throw new NullPointerException(message.formatted(args));
-        }
+        notNull(o, NullPointerException.class, message, args);
     }
 
     /**
      * 断言对象不为 {@code null}
      *
-     * @throws MethodArgsInvalidException  参数 {@code messageSupplier} 为 {@code null}，或其提供的 {@code message} 在对象为
-     *                              {@code null} 时为 {@code null}
-     * @throws NullPointerException 对象为 {@code null}
+     * @throws MethodArgsInvalidException 参数 {@code messageSupplier} 为 {@code null}，或其提供的 {@code message} 在对象为
+     *                                    {@code null} 时为 {@code null}
+     * @throws NullPointerException       对象为 {@code null}
      */
     public static void notNull(@Nullable Object o, @Nonnull Supplier<String> messageSupplier) {
-        Assert.argsNotNull(new Pair<>("messageSupplier", messageSupplier));
-        if (o == null) {
-            String message = messageSupplier.get();
-            Assert.argsNotNull(new Pair<>("messageSupplier.message", message));
-            throw new NullPointerException(message);
-        }
+        notNull(o, NullPointerException.class, messageSupplier);
     }
 
     /**
      * 断言对象不为 {@code null}
      *
-     * @throws MethodArgsInvalidException  参数 {@code message}、{@code args} 或 {@code tClass} 为 {@code null}
-     * @throws NullPointerException 参数为 {@code null}
+     * @throws MethodArgsInvalidException 参数 {@code tClass}、{@code message} 或 {@code args} 为 {@code null}
+     * @throws T                          参数 {@code o} 为 {@code null}
      */
-    public static <T extends Throwable> void notNull(@Nullable Object o, @Nonnull Class<T> tClass,
+    public static <T extends Exception> void notNull(@Nullable Object o, @Nonnull Class<T> tClass,
                                                      @Nonnull String message, @Nonnull Object... args) throws T {
         Assert.argsNotNull(new Pair<>("tClass", tClass), new Pair<>("message", message), new Pair<>("args", args));
         if (o == null) {
@@ -76,8 +68,21 @@ public final class Assert {
         }
     }
 
-    public static void main(String[] args) {
-        notNull(null, IllegalStateException.class, "test");
+    /**
+     * 断言对象不为 {@code null}
+     *
+     * @throws MethodArgsInvalidException 参数 {@code tClass}、{@code messageSupplier} 或其提供的消息在对象 {@code o} 为
+     *                                    {@code null} 时为 {@code null}
+     * @throws T                          对象 {@code o} 为 {@code null}
+     */
+    public static <T extends Exception> void notNull(@Nullable Object o, @Nonnull Class<T> tClass,
+                                                     @Nonnull Supplier<String> messageSupplier) throws T {
+        Assert.argsNotNull(new Pair<>("tClass", tClass), new Pair<>("messageSupplier", messageSupplier));
+        if (o == null) {
+            String message = messageSupplier.get();
+            Assert.argsNotNull(new Pair<>("messageSupplier.message", message));
+            ExceptionUtils.thrown(tClass, message);
+        }
     }
 
     @SafeVarargs
@@ -98,14 +103,5 @@ public final class Assert {
             sb.append(".");
             throw MethodArgsInvalidException.getInstance(sb.toString());
         }
-    }
-
-    /**
-     * 断言位置不可达
-     *
-     * @throws ArrivalUnreachableLocationException 到达了不可达的位置
-     */
-    public static void unreachableLocation(@Nullable String message) {
-        throw ArrivalUnreachableLocationException.getInstance(message);
     }
 }
